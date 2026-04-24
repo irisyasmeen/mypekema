@@ -145,6 +145,7 @@ function isParentActive($pages, $current_page)
                         </div>
 
                         <!-- Permohonan Dropdown (New structure) -->
+                        <?php if ($user_role !== 'admin'): ?>
                         <div class="relative group h-20 flex items-center">
                             <?php $permohonan_pages = ['permohonan.php', 'borang_pergerakan.php', 'borang_lampiran_f.php', 'borang_lampiran_g.php', 'borang_lampiran_k.php', 'borang_lampiran_l.php']; ?>
                             <button
@@ -255,6 +256,8 @@ function isParentActive($pages, $current_page)
                                 </div>
                             </div>
                         </div>
+                        <?php endif; ?>
+
 
                         <!-- Syarikat -->
                         <?php if ($user_role !== 'licensee'): ?>
@@ -447,6 +450,7 @@ function isParentActive($pages, $current_page)
                 <?php endif; ?>
             </div>
 
+            <?php if ($user_role !== 'admin'): ?>
             <div class="space-y-1">
                 <p class="px-4 text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 mt-4">JENIS PERMOHONAN</p>
                 <a href="borang_pergerakan.php"
@@ -476,6 +480,8 @@ function isParentActive($pages, $current_page)
                     class="flex items-center gap-4 px-4 py-4 rounded-2xl text-slate-300 hover:bg-white/5 transition-all"><i
                         class="fas fa-tasks w-6 text-amber-400"></i> Status Permohonan J</a>
             </div>
+            <?php endif; ?>
+
 
             <div class="space-y-1">
                 <p class="px-4 text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 mt-4">ANALISA &

@@ -7,7 +7,7 @@ FTP_USER = "mypekema@kliacustoms.net"
 FTP_PASS = "Iris6102009@#"
 FTP_DIR  = "/"
 
-LOCAL_DIR = r"c:\xampp\htdocs\mypekema"
+LOCAL_DIR = r"c:\xampp\xampp2\htdocs\mypekema"
 
 # Ignore list
 IGNORE = [".git", "uploads", "node_modules", ".vscode", "keep", "check_users_schema.php", "check_allowed_users_schema.php", "list_tables.php", "check_gb_schema.php"]
