@@ -1,8 +1,13 @@
 <?php
 include 'config.php';
 
-$res = $conn->query("DESCRIBE " . TABLE_WHITELIST);
-while($row = $res->fetch_assoc()) {
-    print_r($row);
+$tables = ['allowed_list', 'users'];
+foreach ($tables as $t) {
+    echo "Schema for table: $t\n";
+    $res = $conn->query("DESCRIBE $t");
+    while($row = $res->fetch_assoc()) {
+        print_r($row);
+    }
+    echo "\n";
 }
 ?>
