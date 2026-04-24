@@ -184,6 +184,24 @@ if($c_res) {
         [x-cloak] {
             display: none;
         }
+
+        /* Sticky Action Column */
+        .sticky-col {
+            position: sticky;
+            right: 0;
+            background-color: white;
+            z-index: 10;
+            box-shadow: -4px 0 10px rgba(0,0,0,0.05);
+        }
+
+        tr:hover .sticky-col {
+            background-color: #f9fafb; /* match hover:bg-gray-50 */
+        }
+
+        thead .sticky-col {
+            background-color: #f9fafb; /* match bg-gray-50 */
+            z-index: 20;
+        }
     </style>
     <script>
         // Inject PHP data directly into a JS variable safely
@@ -313,54 +331,58 @@ if($c_res) {
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">
                                 E-mel</th>
-                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">
                                 Nama</th>
-                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">
                                 Peranan</th>
-                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">
                                 Syarikat</th>
-                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
-                                Kali Terakhir Log Masuk</th>
-                            <th class="px-6 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
+                            <th class="px-4 py-3 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">
+                                Log Masuk</th>
+                            <th class="px-4 py-3 text-center text-[10px] font-black text-gray-400 uppercase tracking-widest sticky-col">
                                 Tindakan</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         <?php foreach ($users as $user): ?>
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 whitespace-nowrap font-medium text-gray-900">
+                            <tr class="hover:bg-gray-50 group">
+                                <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
                                     <?= htmlspecialchars($user['email'], ENT_QUOTES | ENT_SUBSTITUTE) ?>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-gray-600">
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
                                     <?= htmlspecialchars($user['nama_pegawai'], ENT_QUOTES | ENT_SUBSTITUTE) ?>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-gray-600">
-                                    <?php
-                                    $role_display = str_replace('_', ' ', $user['role']);
-                                    echo htmlspecialchars(ucwords($role_display));
-                                    ?>
+                                <td class="px-4 py-3 whitespace-nowrap text-xs text-gray-600">
+                                    <span class="px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 font-bold border border-blue-100">
+                                        <?php
+                                        $role_display = str_replace('_', ' ', $user['role']);
+                                        echo htmlspecialchars(ucwords($role_display));
+                                        ?>
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-gray-600">
+                                <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
                                     <?= htmlspecialchars($user['company_nama'] ?? '-') ?>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-gray-600">
-                                    <?= $user['last_login'] ? date('d-m-Y h:i A', strtotime($user['last_login'])) : 'Belum pernah' ?>
+                                <td class="px-4 py-3 whitespace-nowrap text-xs text-gray-500">
+                                    <div class="flex items-center gap-1.5">
+                                        <i class="far fa-clock opacity-40"></i>
+                                        <?= $user['last_login'] ? date('d-m-Y H:i', strtotime($user['last_login'])) : 'N/A' ?>
+                                    </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-4">
+                                <td class="px-4 py-3 whitespace-nowrap text-center text-sm font-medium space-x-3 sticky-col">
                                     <button type="button" onclick="openEdit(<?= $user['id'] ?>)"
-                                        class="text-blue-600 hover:text-blue-900 cursor-pointer transition-colors duration-200"
+                                        class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white flex items-center justify-center transition-all shadow-sm"
                                         title="Kemaskini">
-                                        <i class="fas fa-edit transform hover:scale-110"></i>
+                                        <i class="fas fa-edit"></i>
                                     </button>
                                     <?php if ($user['id'] != $_SESSION['user_id']): ?>
                                         <a href="manage_users.php?delete_id=<?= $user['id'] ?>"
                                             onclick="return confirm('Anda pasti mahu memadam pengguna ini?')"
-                                            class="text-red-600 hover:text-red-900 transition-colors duration-200"
+                                            class="w-8 h-8 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white flex items-center justify-center transition-all shadow-sm"
                                             title="Padam">
-                                            <i class="fas fa-trash-alt transform hover:scale-110"></i>
+                                            <i class="fas fa-trash-alt"></i>
                                         </a>
                                     <?php endif; ?>
                                 </td>
