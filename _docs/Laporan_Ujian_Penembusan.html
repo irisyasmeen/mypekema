@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ms">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Akhir Audit Keselamatan - MyPEKEMA</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #525659;
+            color: #333;
+        }
+
+        .page {
+            background-color: white;
+            width: 210mm;
+            min-height: 297mm;
+            margin: 20px auto;
+            padding: 25mm;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        @media print {
+            body {
+                background: none;
+                -webkit-print-color-adjust: exact;
+                margin: 0;
+            }
+
+            .page {
+                margin: 0;
+                box-shadow: none;
+                width: 100%;
+                page-break-after: always;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        .header {
+            border-bottom: 2px solid #2c3e50;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .header h1 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 24px;
+            text-transform: uppercase;
+        }
+
+        .header .meta {
+            text-align: right;
+            font-size: 12px;
+            color: #7f8c8d;
+        }
+
+        .status-badge {
+            background-color: #27ae60;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 14px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        h2 {
+            color: #2980b9;
+            border-left: 5px solid #2980b9;
+            padding-left: 10px;
+            margin-top: 30px;
+            font-size: 18px;
+        }
+
+        h3 {
+            color: #34495e;
+            font-size: 16px;
+            margin-top: 20px;
+            border-bottom: 1px solid #bdc3c7;
+            padding-bottom: 5px;
+        }
+
+        p {
+            line-height: 1.6;
+            font-size: 14px;
+            text-align: justify;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 13px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ecf0f1;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #34495e;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        code {
+            background-color: #f1f1f1;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 12px;
+            color: #c0392b;
+        }
+
+        pre {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-size: 12px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 25mm;
+            left: 25mm;
+            right: 25mm;
+            text-align: center;
+            font-size: 10px;
+            color: #95a5a6;
+            border-top: 1px solid #ecf0f1;
+            padding-top: 10px;
+        }
+
+        .download-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #e74c3c;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            font-weight: bold;
+            transition: transform 0.2s;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            background-color: #c0392b;
+        }
+    </style>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+
+    <a href="javascript:window.print()" class="download-btn no-print">
+        <i class="fas fa-file-pdf"></i> Simpan sebagai PDF
+    </a>
+
+    <div class="page">
+        <div class="header">
+            <div>
+                <h1>Laporan Audit Keselamatan</h1>
+                <div class="status-badge"><i class="fas fa-shield-alt"></i> SELAMAT (SECURE)</div>
+            </div>
+            <div class="meta">
+                <strong>Tarikh:</strong> 09 Februari 2026<br>
+                <strong>Sistem:</strong> MyPEKEMA (Pekema)<br>
+                <strong>Pengaudit:</strong> Antigravity AI
+            </div>
+        </div>
+
+        <h2>1. Rumusan Eksekutif</h2>
+        <p>
+            Satu siri ujian penembusan (Penetration Test) dan kerja-kerja pemulihan keselamatan (Security Remediation)
+            telah dijalankan ke atas kod sumber sistem MyPEKEMA.
+            Pada permulaan audit, sistem didapati mempunyai <strong>30+ Kerentanan Keselamatan</strong>, termasuk isu
+            KRITIKAL yang membolehkan pencerobohan tanpa kata laluan.
+            Kini, kesemua isu tersebut telah <strong>DIBAIKI SEPENUHNYA</strong>. Imbasan terakhir menunjukkan <strong>0
+                ISU</strong>.
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Kategori Kerentanan</th>
+                    <th>Status Awal</th>
+                    <th>Status Terkini</th>
+                    <th>Tindakan Diambil</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Google Auth Bypass</td>
+                    <td style="color: #c0392b; font-weight: bold;">KRITIKAL</td>
+                    <td style="color: #27ae60; font-weight: bold;">SELAMAT</td>
+                    <td>Validasi Token ID dengan Google API</td>
+                </tr>
+                <tr>
+                    <td>Hardcoded Password</td>
+                    <td style="color: #e67e22; font-weight: bold;">TINGGI (27 Fail)</td>
+                    <td style="color: #27ae60; font-weight: bold;">SELAMAT</td>
+                    <td>Pembersihan kod & integrasi <code>config.php</code></td>
+                </tr>
+                <tr>
+                    <td>Tidak Selamat Muat Naik</td>
+                    <td style="color: #f1c40f; font-weight: bold;">SEDERHANA</td>
+                    <td style="color: #27ae60; font-weight: bold;">SELAMAT</td>
+                    <td>Semakan jenis MIME (Magic Bytes)</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>2. Perincian Pemulihan</h2>
+
+        <h3>2.1 Pembaikan Pintasan Pengesahan (Google Auth)</h3>
+        <p>
+            <strong>Isu Terdahulu:</strong> Fail <code>google_auth.php</code> mempercayai sebarang e-mel yang dihantar
+            oleh klien tanpa pengesahan.
+            <br>
+            <strong>Tindakan Pembaikan:</strong> Kod telah dikemaskini untuk mengambil <code>id_token</code> daripada
+            klien dan menghantarnya ke pelayan Google (<code>oauth2.googleapis.com/tokeninfo</code>) untuk pengesahan.
+            Hanya token yang sah dan dijana untuk Client ID aplikasi ini sahaja diterima.
+        </p>
+
+        <h3>2.2 Pembersihan Kata Laluan Terdedah</h3>
+        <p>
+            <strong>Isu Terdahulu:</strong> Lebih daripada 25 fail PHP mengandungi baris kod kata laluan pangkalan data
+            secara jelas.
+            <br>
+            <strong>Tindakan Pembaikan:</strong> Skrip automasi digunakan untuk membuang blok kod tersebut daripada
+            kesemua fail terjejas dan menggantikannya dengan <code>include 'config.php';</code>.
+        </p>
+
+        <h3>2.3 Pengukuhan Muat Naik Fail</h3>
+        <p>
+            <strong>Isu Terdahulu:</strong> Fungsi muat naik fail hanya menyemak sambungan fail.
+            <br>
+            <strong>Tindakan Pembaikan:</strong> Fail <code>vehicle_details.php</code> kini menggunakan fungsi
+            <code>finfo_open(FILEINFO_MIME_TYPE)</code> untuk memastikan fail adalah benar-benar imej sebelum disimpan.
+        </p>
+
+        <h2>3. Bukti Imbasan Akhir</h2>
+        <p>Imbasan menggunakan alat <code>penetration_test.py</code> menunjukkan keputusan bersih:</p>
+        <pre>
+==================================================
+    MYPEKEMA AUTOMATED PENETRATION TESTER        
+==================================================
+Target Directory: C:\xampp\htdocs\pekema
+
+SCAN COMPLETE
+Files Scanned: 102
+Total Issues Found: 0
+Critical Issues: 0
+</pre>
+
+        <h2>4. Cadangan Penyelenggaraan</h2>
+        <p>
+            1. <strong>Kunci Fail config.php:</strong> Pastikan kebenaran fail (permissions) ditetapkan dengan
+            betul.<br>
+            2. <strong>Kunci Folder uploads:</strong> Halang perlaksanaan skrip dalam folder ini.<br>
+            3. <strong>Imbasan Berkala:</strong> Jalankan skrip ujian penembusan setiap kali ada perubahan kod baharu.
+        </p>
+
+        <div class="footer">
+            Dokumen ini dijana secara automatik oleh Antigravity AI Security Audit pada 09 Februari 2026.
+        </div>
+    </div>
+
+</body>
+
+</html>

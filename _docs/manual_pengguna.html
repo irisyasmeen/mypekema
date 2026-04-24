@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ms">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual Pengguna - Sistem MyPEKEMA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        h1,
+        h2,
+        h3 {
+            font-weight: 700;
+        }
+
+        section {
+            margin-bottom: 2.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        .manual-image {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-8 max-w-4xl">
+
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-800">Manual Pengguna Sistem MyPEKEMA</h1>
+            <p class="text-lg text-gray-500 mt-2">Panduan lengkap untuk menggunakan sistem pengurusan gudang.</p>
+        </header>
+
+        <div class="bg-white shadow-lg rounded-lg p-8">
+
+            <section id="pengenalan">
+                <h2 class="text-2xl font-bold text-blue-600 border-b-2 border-blue-200 pb-2 mb-4">1. Pengenalan</h2>
+                <p>Selamat datang ke Sistem MyPEKEMA. Sistem ini direka untuk membantu pegawai dalam mengurus, menjejak,
+                    dan menganalisis data inventori kenderaan di gudang. Manual ini akan membimbing anda melalui
+                    ciri-ciri utama sistem, dari pendaftaran akaun hingga penjanaan laporan.</p>
+            </section>
+
+            <section id="bermula">
+                <h2 class="text-2xl font-bold text-blue-600 border-b-2 border-blue-200 pb-2 mb-4">2. Bermula</h2>
+                <h3 class="text-xl font-semibold mb-3">2.1 Pendaftaran Akaun</h3>
+                <p class="mb-2">Untuk menggunakan sistem ini, setiap pegawai perlu mendaftar akaun menggunakan emel
+                    rasmi jabatan.</p>
+                <ol class="list-decimal list-inside space-y-2">
+                    <li>Buka halaman <strong>register.php</strong>.</li>
+                    <li>Isi butiran berikut:
+                        <ul class="list-disc list-inside ml-6 mt-2">
+                            <li><strong>Nama Pegawai:</strong> Masukkan nama penuh anda.</li>
+                            <li><strong>Emel Jabatan:</strong> Gunakan emel rasmi yang berakhir dengan
+                                <code>@customs.gov.my</code>. Pendaftaran akan gagal jika format emel tidak betul.</li>
+                            <li><strong>Kata Laluan:</strong> Cipta satu kata laluan yang selamat.</li>
+                        </ul>
+                    </li>
+                    <li>Klik butang <strong>Daftar</strong>.</li>
+                </ol>
+                <img src="https://placehold.co/800x400/e2e8f0/64748b?text=Screenshot:+Halaman+Pendaftaran"
+                    alt="Halaman Pendaftaran" class="manual-image">
+
+                <h3 class="text-xl font-semibold mt-6 mb-3">2.2 Log Masuk</h3>
+                <p class="mb-2">Selepas pendaftaran berjaya, anda boleh log masuk ke sistem.</p>
+                <ol class="list-decimal list-inside space-y-2">
+                    <li>Buka halaman <strong>login.php</strong>.</li>
+                    <li>Masukkan <strong>Emel Jabatan</strong> dan <strong>Kata Laluan</strong> yang telah anda
+                        daftarkan.</li>
+                    <li>Klik butang <strong>Log Masuk</strong>.</li>
+                </ol>
+            </section>
+
+            <section id="ciri-utama">
+                <h2 class="text-2xl font-bold text-blue-600 border-b-2 border-blue-200 pb-2 mb-4">3. Ciri-Ciri Utama
+                </h2>
+                <p class="mb-6">Setelah log masuk, anda akan melihat menu utama di bahagian atas skrin. Berikut adalah
+                    penerangan bagi setiap modul:</p>
+
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-xl font-semibold">3.1 Dashboard</h3>
+                        <p>Ini adalah paparan utama sistem. Ia memberikan ringkasan data penting secara visual:</p>
+                        <ul class="list-disc list-inside ml-6 mt-2">
+                            <li><strong>Kad Statistik:</strong> Memaparkan jumlah kenderaan, jumlah syarikat, dan jumlah
+                                cukai terkumpul.</li>
+                            <li><strong>Carta Pai:</strong> Menunjukkan agihan peratusan kenderaan mengikut syarikat
+                                GB/PEKEMA.</li>
+                            <li><strong>Aktiviti Terkini:</strong> Senarai kenderaan terbaharu yang dimasukkan ke dalam
+                                sistem.</li>
+                            <li><strong>Tindakan Pantas:</strong> Butang pintas untuk menambah kenderaan atau menjana
+                                laporan.</li>
+                        </ul>
+                        <img src="https://placehold.co/800x450/e2e8f0/64748b?text=Screenshot:+Dashboard+Utama"
+                            alt="Dashboard Utama" class="manual-image">
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-semibold">3.2 Kenderaan</h3>
+                        <p>Menu ini mempunyai beberapa sub-menu untuk pengurusan kenderaan.</p>
+                        <ul class="list-disc list-inside ml-6 mt-2">
+                            <li><strong>Senarai Kenderaan (<code>vehicles.php</code>):</strong> Memaparkan semua
+                                kenderaan, dengan fungsi carian, edit, dan padam.</li>
+                            <li><strong>Tambah Guna OCR (<code>ocr_upload.php</code>):</strong> Ciri AI untuk
+                                mengautomasikan kemasukan data dari imej dokumen.</li>
+                        </ul>
+                        <img src="https://placehold.co/800x400/e2e8f0/64748b?text=Screenshot:+Senarai+Kenderaan"
+                            alt="Senarai Kenderaan" class="manual-image">
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-semibold">3.3 GB/PEKEMA</h3>
+                        <p>Modul ini adalah untuk menguruskan maklumat syarikat, termasuk menambah, mengedit, dan
+                            memadam rekod.</p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-semibold">3.4 Laporan</h3>
+                        <p>Halaman ini membolehkan anda menjana laporan inventori yang spesifik dengan menapis data
+                            mengikut syarikat atau julat tarikh.</p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-semibold">3.5 Carian Pintar</h3>
+                        <p>Gunakan ciri AI ini untuk membuat carian menggunakan bahasa biasa seperti
+                            <code>"Tunjukkan semua Toyota Voxy tahun 2022"</code>.</p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-semibold">3.6 Analisa</h3>
+                        <p>Menu lungsur turun ini menyediakan beberapa halaman analisis data, seperti mengikut syarikat,
+                            cukai, tahun, dan usia kenderaan.</p>
+                        <img src="https://placehold.co/800x400/e2e8f0/64748b?text=Screenshot:+Halaman+Analisis"
+                            alt="Halaman Analisis" class="manual-image">
+                    </div>
+                </div>
+            </section>
+
+            <section id="log-keluar">
+                <h2 class="text-2xl font-bold text-blue-600 border-b-2 border-blue-200 pb-2 mb-4">4. Log Keluar</h2>
+                <p>Untuk keluar dari sistem, klik butang <strong>Log Keluar</strong> yang berada di penjuru kanan atas
+                    menu utama. Ini akan menamatkan sesi anda dan membawa anda kembali ke halaman log masuk.</p>
+            </section>
+
+            <div class="text-center mt-12 border-t pt-6">
+                <a href="index.php" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg">
+                    <i class="fas fa-arrow-left mr-2"></i> Kembali ke Dashboard
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+
+</html>

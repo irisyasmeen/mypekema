@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ms">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Selamat Datang ke MyPEKEMA - Pengurusan Inventori Korporat</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .hero-section {
+            background-image: linear-gradient(rgba(30, 58, 138, 0.8), rgba(30, 58, 138, 0.8)), url('https://images.unsplash.com/photo-1586615286598-fed33b7ac02e?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+        }
+
+        #news-feed-container.loading {
+            opacity: 0.5;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .news-item:hover {
+            background-color: #eff6ff;
+            /* bg-blue-50 */
+        }
+
+        .feature-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50">
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-2xl font-bold text-blue-900 flex items-center">
+                <i class="fas fa-warehouse text-blue-700 mr-3"></i>
+                MyPEKEMA
+            </div>
+            <nav>
+                <a href="login.php"
+                    class="bg-blue-700 hover:bg-blue-800 text-white font-bold py-2 px-5 rounded-md transition duration-300">
+                    <i class="fas fa-sign-in-alt mr-2"></i>Log Masuk
+                </a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section text-white">
+        <div class="container mx-auto px-6 py-28 text-center">
+            <h1 class="text-4xl md:text-5xl font-extrabold leading-tight mb-4">Pengurusan Kenderaan CBU Import</h1>
+            <p class="text-lg md:text-xl text-blue-200 mb-8 max-w-3xl mx-auto">Sistem bersepadu untuk kecekapan
+                pengurusan kenderaan di gudang berlesen PEKEMA.</p>
+            <a href="login.php"
+                class="bg-white text-blue-800 font-bold py-3 px-8 rounded-md text-lg hover:bg-blue-100 transition duration-300">
+                Akses Portal
+            </a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-20 bg-white">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-blue-900">Direka Untuk Kecekapan Pengurusan</h2>
+                <p class="text-gray-600 mt-2 max-w-2xl mx-auto">MyPEKEMA menyediakan alatan yang anda perlukan untuk
+                    operasi gudang kenderaan.</p>
+            </div>
+            <div class="grid md:grid-cols-3 gap-8 text-center">
+                <div class="feature-card bg-blue-50 p-8 rounded-lg border border-blue-100">
+                    <i class="fas fa-database text-3xl text-blue-600 mb-4"></i>
+                    <h3 class="text-xl font-bold text-blue-900 mb-2">Pangkalan Data Berpusat</h3>
+                    <p class="text-blue-800">Akses semua data kenderaan, maklumat cukai, dan status inventori dari satu
+                        platform yang selamat.</p>
+                </div>
+                <div class="feature-card bg-blue-50 p-8 rounded-lg border border-blue-100">
+                    <i class="fas fa-chart-pie text-3xl text-blue-600 mb-4"></i>
+                    <h3 class="text-xl font-bold text-blue-900 mb-2">Analisis & Laporan</h3>
+                    <p class="text-blue-800">Jana laporan terperinci mengenai pecahan cukai, tren jenama, dan audit
+                        trail untuk membuat keputusan termaklum.</p>
+                </div>
+                <div class="feature-card bg-blue-50 p-8 rounded-lg border border-blue-100">
+                    <i class="fas fa-shield-alt text-3xl text-blue-600 mb-4"></i>
+                    <h3 class="text-xl font-bold text-blue-900 mb-2">Kawalan Akses Selamat</h3>
+                    <p class="text-blue-800">Tetapkan peranan pengguna dan admin untuk memastikan hanya kakitangan yang
+                        dibenarkan dapat mengakses data sensitif.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- News Feed Section -->
+    <section class="py-20 bg-slate-50">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-blue-900">Berita Industri Automotif</h2>
+                <p class="text-gray-600 mt-2">Kekal maklum dengan perkembangan terkini dalam pasaran automotif serantau.
+                </p>
+                <p id="last-updated" class="text-xs text-gray-400 mt-2"></p>
+            </div>
+
+            <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-md border border-gray-200">
+                <div id="news-feed-container" class="divide-y divide-gray-200 transition-opacity duration-300">
+                    <!-- News items will be dynamically inserted here by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-blue-900 text-white">
+        <div class="container mx-auto px-6 py-10 text-center">
+            <p class="font-semibold">&copy; 2025 MyPEKEMA | Hak Cipta Terpelihara | Bahagian Perkastaman</p>
+            <p class="text-sm text-blue-300 mt-2">Penyelesaian Pengurusan Inventori Kenderaan Korporat.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const newsFeedContainer = document.getElementById('news-feed-container');
+            const lastUpdatedElem = document.getElementById('last-updated');
+
+            const newsData = [
+                { source: 'Paultan.org', title: 'Harga petrol RON97, RON95 dan diesel kekal dari 25 Sept - 1 Okt 2025', link: '#', category: 'Tempatan', icon: 'fas fa-gas-pump' },
+                { source: 'WapCar', title: 'Rebiu: Honda CR-V 2025 baharu di Malaysia - Adakah ia SUV keluarga terbaik?', link: '#', category: 'Rebiu', icon: 'fas fa-car-side' },
+                { source: 'Nikkei Asia', title: 'Thailand aims to be top EV producer in Southeast Asia by 2030', link: '#', category: 'ASEAN', icon: 'fas fa-chart-line' },
+                { source: 'Paultan.org', title: 'AES/AWAS: 5 kamera baharu di Lebuhraya PLUS akan beroperasi tidak lama lagi', link: '#', category: 'Tempatan', icon: 'fas fa-camera' },
+                { source: 'Top Gear PH', title: 'A look at the growing pickup truck market in the Philippines', link: '#', category: 'Antarabangsa', icon: 'fas fa-truck-pickup' }
+            ];
+
+            const renderNews = () => {
+                let newsHTML = '';
+                newsData.forEach(item => {
+                    newsHTML += `
+                        <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="news-item block p-4 hover:bg-blue-50 transition duration-200">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 flex-shrink-0 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center mr-4">
+                                    <i class="${item.icon}"></i>
+                                </div>
+                                <div>
+                                    <p class="font-semibold text-blue-900">${item.title}</p>
+                                    <p class="text-sm text-gray-600">${item.source} - <span class="font-medium">${item.category}</span></p>
+                                </div>
+                                <div class="ml-auto pl-4">
+                                    <i class="fas fa-chevron-right text-gray-400"></i>
+                                </div>
+                            </div>
+                        </a>
+                    `;
+                });
+                newsFeedContainer.innerHTML = newsHTML;
+            };
+
+            const fetchNews = () => {
+                newsFeedContainer.classList.add('loading');
+                setTimeout(() => {
+                    const now = new Date();
+                    const timeString = now.toLocaleTimeString('ms-MY', { hour: '2-digit', minute: '2-digit', hour12: true });
+                    lastUpdatedElem.textContent = `Dikemas kini pada: ${timeString}`;
+                    renderNews();
+                    newsFeedContainer.classList.remove('loading');
+                }, 1000);
+            };
+
+            fetchNews();
+            setInterval(fetchNews, 600000); // Refresh every 10 minutes
+        });
+    </script>
+
+</body>
+
+</html>

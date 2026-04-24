@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyPEKEMA - Technology Architecture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@9.4.3/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            securityLevel: 'loose',
+            themeVariables: {
+                primaryColor: '#0f172a',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#3b82f6',
+                lineColor: '#64748b',
+                secondaryColor: '#1e293b',
+                tertiaryColor: '#1e293b'
+            }
+        });
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020617;
+        }
+
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+
+        .mermaid[data-processed="true"] {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body class="text-white min-h-screen p-8">
+
+    <div class="max-w-7xl mx-auto space-y-8">
+
+        <header class="text-center space-y-4">
+            <h1
+                class="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-fuchsia-400">
+                Technology Stack Architecture
+            </h1>
+            <p class="text-slate-400 text-lg">Detailed breakdown of the languages, frameworks, and infrastructure
+                powering MyPEKEMA</p>
+        </header>
+
+        <div
+            class="bg-slate-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl overflow-hidden relative">
+
+            <div class="mermaid">
+                %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#0f172a',
+                'edgeLabelBackground':'#1e293b', 'tertiaryColor': '#1e1b4b'}}}%%
+                graph LR
+                %% Define Classes
+                classDef frontend fill:#0f172a,stroke:#3b82f6,stroke-width:2px,color:#93c5fd
+                classDef backend fill:#1e1b4b,stroke:#8b5cf6,stroke-width:2px,color:#c4b5fd
+                classDef database fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#6ee7b7
+                classDef external fill:#2a1a1a,stroke:#ef4444,stroke-width:2px,color:#fca5a5,stroke-dasharray: 5 5
+                classDef infrastructure fill:#334155,stroke:#94a3b8,stroke-width:1px,color:#f1f5f9
+                classDef flow stroke:#64748b,stroke-width:1px,color:#94a3b8
+
+                %% Frontend Layer
+                subgraph Client ["Frontend Layer (Browser)"]
+                direction TB
+                HTML5["HTML5 Structure"]
+                Tailwind["TailwindCSS <br />(Styling)"]
+                JS["Vanilla JS + Alpine.js <br />(Interactivity)"]
+                Assets["FontAwesome & Assets"]
+                ChartJS["Chart.js <br />(Data Visualization)"]
+
+                HTML5 --> Tailwind
+                HTML5 --> JS
+                JS --> ChartJS
+                end
+
+                %% Backend Layer
+                subgraph Server ["Backend Layer (XAMPP Server)"]
+                direction TB
+                Apache["Apache Web Server"]
+                PHP["PHP 8.2 <br />(Core Logic)"]
+                Composer["Composer <br />(Dependency Mgmt)"]
+                Sessions["Session Mgmt <br />(Auth/Security)"]
+
+                Apache --> PHP
+                PHP --> Composer
+                PHP --> Sessions
+                end
+
+                %% Database Layer
+                subgraph Data ["Data Persistence"]
+                MySQL["MySQL Database <br />(Relational Data)"]
+                Schema["Relational Schema <br />(Vehicles, Users, Logs)"]
+
+                MySQL --- Schema
+                end
+
+                %% External Services
+                subgraph Cloud ["External Services & APIs"]
+                direction TB
+                GoogleOAuth["Google OAuth 2.0 <br />(Identity)"]
+                GoogleMaps["Google Maps API <br />(Location)"]
+                AI_OCR["AI Vision / OCR Processing"]
+                end
+
+                %% Connections
+                Client -->|HTTP Request| Server
+                PHP -->|PDO Connection| MySQL
+                PHP -->|REST/API Call| Cloud
+                JS -->|Async Fetch| PHP
+
+                %% Apply Classes
+                class HTML5,Tailwind,JS,Assets,ChartJS frontend
+                class Apache,PHP,Composer,Sessions backend
+                class MySQL,Schema database
+                class GoogleOAuth,GoogleMaps,AI_OCR external
+
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 text-sm text-slate-400">
+            <div class="p-6 rounded-2xl bg-slate-900/30 border border-white/5">
+                <h3 class="font-bold text-white mb-2 flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-blue-500"></span> Frontend
+                </h3>
+                <p>Built with semantic HTML5 and styled using utility-first TailwindCSS. Alpine.js provides lightweight
+                    reactivity for menus and modals.</p>
+            </div>
+            <div class="p-6 rounded-2xl bg-slate-900/30 border border-white/5">
+                <h3 class="font-bold text-white mb-2 flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-violet-500"></span> Backend
+                </h3>
+                <p>Powered by PHP 8.2 running on Apache. Handles business logic, authentication sessions, and data
+                    processing.</p>
+            </div>
+            <div class="p-6 rounded-2xl bg-slate-900/30 border border-white/5">
+                <h3 class="font-bold text-white mb-2 flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-emerald-500"></span> Database
+                </h3>
+                <p>MySQL relational database stores vehicle inventories, user profiles, and analytical data with strict
+                    schema integrity.</p>
+            </div>
+            <div class="p-6 rounded-2xl bg-slate-900/30 border border-white/5">
+                <h3 class="font-bold text-white mb-2 flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-red-500"></span> Integrations
+                </h3>
+                <p>Leverages Google Cloud Platform for secure OAuth authentication and Maps visualization.</p>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

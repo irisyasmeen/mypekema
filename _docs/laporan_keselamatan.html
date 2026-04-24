@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ms">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laporan Keselamatan Sistem - MyPEKEMA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#001f3f',
+                        secondary: '#1d4ed8',
+                        accent: '#ffd700',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #f8fafc;
+            background-image:
+                radial-gradient(at 0% 0%, rgba(0, 31, 63, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(29, 78, 216, 0.05) 0px, transparent 50%);
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+
+        @media print {
+            .no-print {
+                display: none;
+            }
+
+            body {
+                background: white;
+            }
+
+            .glass-card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+
+<body class="text-slate-800 antialiased selection:bg-blue-100 selection:text-blue-900">
+
+    <!-- Header / Branding -->
+    <header class="bg-[#001f3f] text-white py-8 relative overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-r from-blue-900 to-[#001f3f] opacity-50"></div>
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="flex items-center gap-4">
+                    <div
+                        class="w-16 h-16 bg-white/10 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/20 shadow-2xl">
+                        <i class="fas fa-shield-halved text-3xl text-blue-400"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-black tracking-tight">Gudang<span class="text-yellow-400">Sys</span>
+                        </h1>
+                        <p class="text-blue-200 text-sm font-medium tracking-widest uppercase">Intelligence Command
+                            Center</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div
+                        class="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-500/20 border border-blue-400/30 rounded-full text-xs font-bold text-blue-200 uppercase tracking-wider mb-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Status: Secured
+                    </div>
+                    <p class="text-xs text-slate-400">Tarikh Laporan: <span class="text-white font-mono"
+                            id="current-date"></span></p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-12 max-w-5xl">
+
+        <!-- Document Title -->
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-black text-slate-900 mb-4">Laporan Analisis Keselamatan Sistem</h2>
+            <p class="text-lg text-slate-500 max-w-2xl mx-auto">Dokumen ini memperincikan protokol keselamatan,
+                mekanisme pengesahan, dan integriti data yang diimplementasikan dalam ekosistem MyPEKEMA.</p>
+        </div>
+
+        <!-- Executive Summary -->
+        <section class="mb-10">
+            <div class="glass-card rounded-[2rem] p-8 md:p-10 relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-bl-[4rem] -mr-8 -mt-8 z-0"></div>
+                <div class="relative z-10">
+                    <h3 class="flex items-center gap-3 text-xl font-bold text-slate-900 mb-6">
+                        <i class="fas fa-file-contract text-blue-600"></i> Ringkasan Eksekutif
+                    </h3>
+                    <p class="text-slate-600 leading-relaxed mb-4">
+                        Sistem MyPEKEMA telah dibangunkan dengan mengutamakan keselamatan data dan akses terkawal.
+                        Melalui gabungan teknologi <strong>OAuth 2.0</strong> untuk pengesahan identiti dan prinsip
+                        <strong>Senarai Putih (Allowlist)</strong> yang ketat, sistem ini meminimumkan risiko
+                        pencerobohan akaun secara signifikan.
+                    </p>
+                    <p class="text-slate-600 leading-relaxed">
+                        Infrastruktur keselamatan ini juga mematuhi amalan terbaik industri dengan penggunaan
+                        <em>Prepared Statements</em> untuk menangkis serangan SQL Injection dan kawalan akses berasaskan
+                        peranan (RBAC) untuk memastikan pemisahan tugas yang jelas antara Pentadbir dan Pengguna.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Detailed Security Breakdown -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+
+            <!-- 1. Authentication -->
+            <div class="glass-card rounded-3xl p-8 border-l-4 border-l-blue-600 hover:shadow-lg transition-shadow">
+                <div class="w-12 h-12 bg-blue-50 rounded-xl flex items-center justify-center text-blue-600 mb-6">
+                    <i class="fab fa-google text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800 mb-3">1. Pengesahan Hibrid (Hybrid Auth)</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-start gap-3 text-sm text-slate-600">
+                        <i class="fas fa-check-circle text-emerald-500 mt-1"></i>
+                        <span><strong>Google OAuth 2.0 SSO:</strong> Sistem tidak menyimpan kata laluan tempatan. Semua
+                            log masuk disahkan melalui infrastruktur Google.</span>
+                    </li>
+                    <li class="flex items-start gap-3 text-sm text-slate-600">
+                        <i class="fas fa-check-circle text-emerald-500 mt-1"></i>
+                        <span><strong>Domain Restriction:</strong> Akses dihadkan secara keras kepada domain organisasi
+                            <code
+                                class="bg-slate-100 px-1 py-0.5 rounded text-xs px-2 font-mono text-blue-700">@customs.gov.my</code>
+                            sahaja.</span>
+                    </li>
+                    <li class="flex items-start gap-3 text-sm text-slate-600">
+                        <i class="fas fa-check-circle text-emerald-500 mt-1"></i>
+                        <span><strong>2-Factor Authentication (2FA):</strong> Mewarisi tetapan keselamatan akaun Google
+                            pengguna (Google Authenticator / SMS).</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 2. Authorization -->
+            <div class="glass-card rounded-3xl p-8 border-l-4 border-l-indigo-600 hover:shadow-lg transition-shadow">
+                <div class="w-12 h-12 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600 mb-6">
+                    <i class="fas fa-id-card-clip text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800 mb-3">2. Kawalan Akses (RBAC)</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-start gap-3 text-sm text-slate-600">
+                        <i class="fas fa-check-circle text-emerald-500 mt-1"></i>
+                        <span><strong>Sistem Whitelist:</strong> Hanya e-mel yang didaftarkan dalam pangkalan data
+                            (<code>users_auth</code>) dibenarkan masuk, walaupun pengesahan Google berjaya.</span>
+                    </li>
+                    <li class="flex items-start gap-3 text-sm text-slate-600">
+                        <i class="fas fa-check-circle text-emerald-500 mt-1"></i>
+                        <span><strong>Admin vs User:</strong> Halaman sensitif seperti <em>Pengurusan Pengguna</em>
+                            dilindungi kod peringkat pelayan yang menyemak peranan sesi.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 3. Data Integrity -->
+            <div class="glass-card rounded-3xl p-8 border-l-4 border-l-emerald-600 hover:shadow-lg transition-shadow">
+                <div class="w-12 h-12 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-600 mb-6">
+                    <i class="fas fa-database text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800 mb-3">3. Integriti Pangkalan Data</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-start gap-3 text-sm text-slate-600">
+                        <i class="fas fa-shield-alt text-emerald-500 mt-1"></i>
+                        <span><strong>Prepared Statements:</strong> Semua input pengguna diproses menggunakan parameter
+                            terikat (bound parameters) untuk membasmi sepenuhnya ancaman SQL Injection.</span>
+                    </li>
+                    <li class="flex items-start gap-3 text-sm text-slate-600">
+                        <i class="fas fa-broom text-emerald-500 mt-1"></i>
+                        <span><strong>Sanitasi Input:</strong> Data dibersihkan (trimmed, type-casted) sebelum disimpan
+                            untuk mengekalkan kebersihan data.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- 4. Session & Audit -->
+            <div class="glass-card rounded-3xl p-8 border-l-4 border-l-rose-600 hover:shadow-lg transition-shadow">
+                <div class="w-12 h-12 bg-rose-50 rounded-xl flex items-center justify-center text-rose-600 mb-6">
+                    <i class="fas fa-user-secret text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-800 mb-3">4. Audit & Penyamaran</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-start gap-3 text-sm text-slate-600">
+                        <i class="fas fa-history text-emerald-500 mt-1"></i>
+                        <span><strong>Jejak Audit:</strong> Medan <code>last_login</code> dikemaskini secara automatik
+                            pada setiap sesi untuk memantau keaktifan akaun.</span>
+                    </li>
+                    <li class="flex items-start gap-3 text-sm text-slate-600">
+                        <i class="fas fa-mask text-emerald-500 mt-1"></i>
+                        <span><strong>Error Suppression:</strong> Paparan ralat sistem dimatikan pada persekitaran
+                            produksi untuk mengelakkan kebocoran maklumat struktur pelayan (Information
+                            Disclosure).</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Technical Flow Diagram Placeholder (Optional Visual) -->
+        <section class="mb-12">
+            <h3 class="text-xl font-bold text-slate-900 mb-6">Aliran Keselamatan Log Masuk</h3>
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm overflow-x-auto">
+                <div
+                    class="flex items-center justify-between min-w-[700px] text-sm text-slate-600 font-medium text-center">
+
+                    <div class="w-40 p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                        <i class="fas fa-user mb-2 text-2xl text-slate-400"></i><br>
+                        Pengguna
+                    </div>
+
+                    <div class="flex-1 px-4 text-blue-300"><i class="fas fa-arrow-right"></i></div>
+
+                    <div class="w-40 p-4 bg-blue-50 border border-blue-200 rounded-xl text-blue-900">
+                        <i class="fab fa-google mb-2 text-2xl"></i><br>
+                        Google OAuth<br>
+                        <span class="text-[10px] opacity-70">(Sahkan E-mel)</span>
+                    </div>
+
+                    <div class="flex-1 px-4 text-blue-300"><i class="fas fa-arrow-right"></i></div>
+
+                    <div class="w-40 p-4 bg-indigo-50 border border-indigo-200 rounded-xl text-indigo-900">
+                        <i class="fas fa-list-check mb-2 text-2xl"></i><br>
+                        Semakan DB<br>
+                        <span class="text-[10px] opacity-70">(Whitelist Check)</span>
+                    </div>
+
+                    <div class="flex-1 px-4 text-emerald-300"><i class="fas fa-arrow-right"></i></div>
+
+                    <div class="w-40 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-900">
+                        <i class="fas fa-key mb-2 text-2xl"></i><br>
+                        Akses Diberikan<br>
+                        <span class="text-[10px] opacity-70">(Session Start)</span>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <div class="border-t border-slate-200 pt-8 mt-12 text-center">
+            <p class="text-slate-400 text-sm">Dijana oleh MyPEKEMA Security Module &copy; 2026</p>
+            <button onclick="window.print()"
+                class="mt-4 px-6 py-2 bg-slate-800 text-white rounded-lg text-sm font-bold hover:bg-slate-700 transition-colors no-print">
+                <i class="fas fa-print mr-2"></i> Cetak Laporan
+            </button>
+        </div>
+
+    </main>
+
+    <script>
+        // Set dynamic date
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date').innerText = new Date().toLocaleDateString('ms-MY', options);
+    </script>
+</body>
+
+</html>

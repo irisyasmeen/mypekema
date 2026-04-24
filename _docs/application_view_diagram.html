@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyPEKEMA - Application View Diagram</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@9.4.3/dist/mermaid.min.js"></script>
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'base',
+            securityLevel: 'loose',
+            themeVariables: {
+                primaryColor: '#0f172a',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#3b82f6',
+                lineColor: '#64748b',
+                secondaryColor: '#1e293b',
+                tertiaryColor: '#1e293b'
+            }
+        });
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #020617;
+        }
+
+        /* Ensure the diagram is centered and visible */
+        .mermaid {
+            display: flex;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.5s ease-in;
+        }
+
+        .mermaid[data-processed="true"] {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body class="text-white min-h-screen p-8">
+
+    <div class="max-w-7xl mx-auto space-y-8">
+
+        <header class="text-center space-y-4">
+            <h1
+                class="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
+                Application View Diagram
+            </h1>
+            <p class="text-slate-400 text-lg">Visualizing the High-Level Architecture & Navigation Flow of MyPEKEMA</p>
+        </header>
+
+        <div
+            class="bg-slate-900/50 backdrop-blur-xl border border-white/10 rounded-3xl p-8 shadow-2xl overflow-hidden relative">
+
+            <!-- Graph Definition -->
+            <div class="mermaid">
+                %%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#0f172a',
+                'edgeLabelBackground':'#1e293b', 'tertiaryColor': '#1e1b4b'}}}%%
+                graph TD
+                %% Define Classes
+                classDef default fill:#1e293b,stroke:#334155,stroke-width:1px,color:#e2e8f0
+                classDef core fill:#0f172a,stroke:#3b82f6,stroke-width:2px,color:#fff,font-weight:bold
+                classDef auth fill:#2a1a1a,stroke:#ef4444,stroke-width:2px,color:#f87171,stroke-dasharray: 5 5
+                classDef inventory fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#d1fae5
+                classDef ai fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#e0e7ff
+                classDef tools fill:#334155,stroke:#94a3b8,stroke-width:1px,color:#f1f5f9
+                classDef user fill:#4c1d95,stroke:#a78bfa,stroke-width:2px,color:#ede9fe
+                classDef internalBox fill:#1e293b,stroke:#334155,stroke-width:1px,color:#fff,stroke-dasharray: 5 5
+
+                %% Nodes and Flow
+                User((User)) -->|Access| Login["Login Page"]
+                Login -->|Detail| AuthCheck{"Authenticated?"}
+
+                subgraph Authentication ["Authentication"]
+                direction TB
+                Login
+                Register["Register"]
+                Forgot["Forgot Password"]
+                AuthCheck
+                GoogleAuth["Google OAuth"]
+                end
+
+                Login -.->|New User| Register
+                Login -.->|Recovery| Forgot
+                Login -.->|Alternative| GoogleAuth
+                AuthCheck -->|No| Login
+                AuthCheck -->|Yes| Dashboard
+
+                %% Core System
+                Dashboard["Dashboard <br /> index.php"]:::core
+
+                %% Main Branches
+                Dashboard --> Inventory["Inventory Module"]:::inventory
+                Dashboard --> Analysis["AI Analysis Hub"]:::ai
+                Dashboard --> Company["Company Data <br /> gbpekema.php"]:::tools
+                Dashboard --> Search["Smart Search <br /> carian_pintar.php"]:::tools
+                Dashboard --> Reports["Reports <br /> report.php"]:::tools
+                Dashboard --> UserMgmt["User Profile"]:::user
+
+                %% Inventory Sub-Modules
+                subgraph InvModule ["Inventory Management"]
+                direction TB
+                Inventory
+                Vehicles["Vehicles List <br /> vehicles.php"]
+                AddVeh["Manual Entry <br /> tambah_kenderaan.php"]
+                Import["Import CSV <br /> import_csv.php"]
+                OCR["AI Vision OCR <br /> ocr_upload.php"]
+
+                Inventory --> Vehicles
+                Inventory --> AddVeh
+                Inventory --> Import
+                Inventory --> OCR
+
+                Vehicles -->|Action| Details["Vehicle Details"]
+                Vehicles -->|Action| EditVeh["Edit Vehicle"]
+                end
+
+                %% AI Analysis Sub-Modules
+                subgraph AIModule ["AI Intelligence Unit"]
+                direction TB
+                Analysis
+                AnlzVeh["Vehicle Analysis"]
+                AnlzTax["Tax Analysis"]
+                AnlzAnom["Anomaly Detection"]
+                AnlzNet["Network Analysis"]
+                AnlzAP["AP Expiry"]
+                AnlzBonded["Warehouse/Bonded"]
+                AnlzUnpaid["Unpaid Tax"]
+
+                Analysis --> AnlzVeh
+                Analysis --> AnlzTax
+                Analysis --> AnlzAnom
+                Analysis --> AnlzNet
+                Analysis --> AnlzAP
+                Analysis --> AnlzBonded
+                Analysis --> AnlzUnpaid
+                end
+
+                %% User Management Sub-Modules
+                subgraph UserModule ["User & Settings"]
+                direction TB
+                UserMgmt
+                Profile["Profile Settings"]
+                AdminUsers["Manage Users <br /> (Admin Only)"]
+                Manual["User Manual"]
+                Logout["Logout"]
+
+                UserMgmt --> Profile
+                UserMgmt --> AdminUsers
+                UserMgmt --> Manual
+                UserMgmt --> Logout
+                end
+
+                %% Apply Internal Box Styles
+                class InvModule,AIModule,UserModule internalBox
+
+                %% Styling Classes Application
+                class Login,Register,Forgot,AuthCheck,GoogleAuth auth
+                class Inventory,Vehicles,AddVeh,Import,OCR,Details,EditVeh inventory
+                class Analysis,AnlzVeh,AnlzTax,AnlzAnom,AnlzNet,AnlzAP,AnlzBonded,AnlzUnpaid ai
+                class Company,Search,Reports tools
+                class UserMgmt,Profile,AdminUsers,Manual,Logout user
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm text-slate-400">
+            <div class="p-6 rounded-2xl bg-slate-900/30 border border-white/5">
+                <h3 class="font-bold text-white mb-2 flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-emerald-500"></span> Inventory Management
+                </h3>
+                <p>Core module for managing vehicle stocks, supporting manual entry, bulk CSV imports, and AI-powered
+                    OCR document scanning.</p>
+            </div>
+            <div class="p-6 rounded-2xl bg-slate-900/30 border border-white/5">
+                <h3 class="font-bold text-white mb-2 flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-indigo-500"></span> AI Analysis Hub
+                </h3>
+                <p>Advanced analytics suite providing insights on tax, anomalies, network relationships, AP expiry, and
+                    warehouse duration monitoring.</p>
+            </div>
+            <div class="p-6 rounded-2xl bg-slate-900/30 border border-white/5">
+                <h3 class="font-bold text-white mb-2 flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-blue-500"></span> Central Dashboard
+                </h3>
+                <p>The command center `index.php` connecting all modules with a high-performance, responsive navigation
+                    system.</p>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+</html>

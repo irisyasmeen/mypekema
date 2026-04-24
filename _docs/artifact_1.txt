@@ -1,0 +1,549 @@
+<?php
+session_start();
+include 'config.php';
+
+if (!isset($_SESSION['user_email'])) {
+    header("Location: login.php");
+    exit();
+}
+
+// === DATA COLLECTION ===
+
+// 1. Summary Cards
+$sql_summary = "SELECT 
+                    SUM(duty_rm) as total_cukai,
+                    COUNT(id) as total_kenderaan
+                FROM vehicle_inventory";
+$result_summary = $conn->query($sql_summary);
+$summary_data = $result_summary->fetch_assoc();
+
+$sql_gb_count = "SELECT COUNT(id) as total_gb FROM gbpekema";
+$result_gb_count = $conn->query($sql_gb_count);
+$gb_count_data = $result_gb_count->fetch_assoc();
+
+$total_cukai = $summary_data['total_cukai'] ?? 0;
+$total_kenderaan = $summary_data['total_kenderaan'] ?? 0;
+$total_gb = $gb_count_data['total_gb'] ?? 0;
+
+// 2. Pie Chart Data - With LEFT JOIN for vehicles without company
+$sql_pie = "SELECT 
+                COALESCE(g.nama, 'Tidak Diketahui') as nama, 
+                COUNT(v.id) as vehicle_count 
+            FROM vehicle_inventory v 
+            LEFT JOIN gbpekema g ON v.gbpekema_id = g.id 
+            GROUP BY nama 
+            ORDER BY vehicle_count DESC";
+$result_pie = $conn->query($sql_pie);
+$pie_labels = [];
+$pie_data = [];
+if ($result_pie) {
+    while ($row = $result_pie->fetch_assoc()) {
+        $pie_labels[] = $row['nama'];
+        $pie_data[] = (int)$row['vehicle_count'];
+    }
+}
+$pie_chart_data = json_encode(['labels' => $pie_labels, 'data' => $pie_data]);
+
+// 3. Recent Activities
+$sql_activity = "SELECT v.vehicle_model, g.nama as gb_nama, v.created_at 
+                 FROM vehicle_inventory v
+                 LEFT JOIN gbpekema g ON v.gbpekema_id = g.id
+                 ORDER BY v.created_at DESC 
+                 LIMIT 5";
+$result_activity = $conn->query($sql_activity);
+$recent_activities = $result_activity->fetch_all(MYSQLI_ASSOC);
+
+// 4. Tax Analysis
+$sql_tax = "SELECT 
+                SUM(duti_import) as total_import, 
+                SUM(duti_eksais) as total_eksais, 
+                SUM(cukai_jualan) as total_jualan
+            FROM vehicle_inventory";
+$result_tax = $conn->query($sql_tax);
+$tax_data = $result_tax->fetch_assoc();
+$total_import = $tax_data['total_import'] ?? 0;
+$total_eksais = $tax_data['total_eksais'] ?? 0;
+$total_jualan = $tax_data['total_jualan'] ?? 0;
+
+$tax_distribution_data = json_encode([
+    'labels' => ['Duti Import', 'Duti Eksais', 'Cukai Jualan'],
+    'data' => [$total_import, $total_eksais, $total_jualan]
+]);
+
+// 5. Monthly Collection Data
+$current_year = date('Y');
+$sql_line = "SELECT 
+                MONTH(payment_date) as month, 
+                SUM(duty_rm) as monthly_total
+             FROM vehicle_inventory
+             WHERE YEAR(payment_date) = ? AND duty_rm > 0
+             GROUP BY MONTH(payment_date)
+             ORDER BY month ASC";
+
+$stmt_line = $conn->prepare($sql_line);
+$stmt_line->bind_param("i", $current_year);
+$stmt_line->execute();
+$result_line = $stmt_line->get_result();
+
+$monthly_data = array_fill(1, 12, 0);
+while ($row = $result_line->fetch_assoc()) {
+    $monthly_data[(int)$row['month']] = (float)$row['monthly_total'];
+}
+$stmt_line->close();
+
+$line_chart_labels = ["Jan", "Feb", "Mac", "Apr", "Mei", "Jun", "Jul", "Ogo", "Sep", "Okt", "Nov", "Dis"];
+$line_chart_data_points = array_values($monthly_data);
+
+$tax_line_chart_data = json_encode([
+    'labels' => $line_chart_labels,
+    'data' => $line_chart_data_points
+]);
+
+// AI FEATURES: Historical data for last 6 months
+$sql_historical = "SELECT 
+                        DATE_FORMAT(payment_date, '%Y-%m') as month,
+                        SUM(duty_rm) as total,
+                        COUNT(id) as count
+                    FROM vehicle_inventory
+                    WHERE payment_date >= DATE_SUB(NOW(), INTERVAL 6 MONTH)
+                    AND duty_rm > 0
+                    GROUP BY DATE_FORMAT(payment_date, '%Y-%m')
+                    ORDER BY month ASC";
+$result_historical = $conn->query($sql_historical);
+$historical_data = [];
+while ($row = $result_historical->fetch_assoc()) {
+    $historical_data[] = [
+        'month' => $row['month'],
+        'total' => floatval($row['total']),
+        'count' => intval($row['count'])
+    ];
+}
+
+// AI: Company performance data
+$sql_company_performance = "SELECT 
+                                g.nama,
+                                COUNT(v.id) as vehicle_count,
+                                SUM(v.duty_rm) as total_tax,
+                                AVG(v.duty_rm) as avg_tax
+                            FROM vehicle_inventory v
+                            JOIN gbpekema g ON v.gbpekema_id = g.id
+                            WHERE v.duty_rm > 0
+                            GROUP BY g.nama
+                            ORDER BY total_tax DESC
+                            LIMIT 10";
+$result_company_performance = $conn->query($sql_company_performance);
+$company_performance = [];
+if ($result_company_performance) {
+    while ($row = $result_company_performance->fetch_assoc()) {
+        $company_performance[] = [
+            'name' => $row['nama'],
+            'count' => intval($row['vehicle_count']),
+            'total' => floatval($row['total_tax']),
+            'avg' => floatval($row['avg_tax'])
+        ];
+    }
+}
+
+// AI: Anomaly detection - High value vehicles
+$sql_anomalies = "SELECT v.vehicle_model, v.duty_rm, v.payment_date
+                  FROM vehicle_inventory v
+                  WHERE v.duty_rm > (SELECT AVG(duty_rm) * 2 FROM vehicle_inventory WHERE duty_rm > 0)
+                  AND v.duty_rm > 0
+                  ORDER BY v.duty_rm DESC
+                  LIMIT 5";
+$result_anomalies = $conn->query($sql_anomalies);
+$anomalies = [];
+$avg_duty = 0;
+
+// Get average for comparison
+$avg_result = $conn->query("SELECT AVG(duty_rm) as avg_duty FROM vehicle_inventory WHERE duty_rm > 0");
+if ($avg_result) {
+    $avg_row = $avg_result->fetch_assoc();
+    $avg_duty = $avg_row['avg_duty'] ?? 1;
+}
+
+if ($result_anomalies) {
+    while ($row = $result_anomalies->fetch_assoc()) {
+        $row['avg_duty'] = $avg_duty;
+        $anomalies[] = $row;
+    }
+}
+
+?>
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Enhanced Dashboard - GudangSys</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .ai-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        .insight-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            transition: transform 0.3s;
+        }
+        .insight-card:hover {
+            transform: translateY(-5px);
+        }
+        .no-data-message {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 300px;
+            color: #9CA3AF;
+            text-align: center;
+            flex-direction: column;
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <?php include 'topmenu.php'; ?>
+
+    <main class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <div x-data="{ activeTab: 'ringkasan' }">
+            <div class="mb-8">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800">AI-Enhanced Dashboard</h1>
+                        <p class="text-gray-500 mt-1">Analisis pintar dengan ramalan AI dan pengesanan anomali</p>
+                    </div>
+                    <div class="ai-badge text-white px-4 py-2 rounded-lg text-sm font-semibold">
+                        <i class="fas fa-robot mr-2"></i>AI Powered
+                    </div>
+                </div>
+
+                <div class="border-b border-gray-200 mt-6">
+                    <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                        <button @click="activeTab = 'ringkasan'" 
+                                :class="{ 'border-blue-600 text-blue-600': activeTab === 'ringkasan', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'ringkasan' }"
+                                class="whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
+                            <i class="fas fa-home mr-2"></i>Ringkasan Utama
+                        </button>
+                        <button @click="activeTab = 'cukai'" 
+                                :class="{ 'border-blue-600 text-blue-600': activeTab === 'cukai', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'cukai' }"
+                                class="whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
+                            <i class="fas fa-chart-bar mr-2"></i>Analisa Cukai
+                        </button>
+                        <button @click="activeTab = 'ai'" 
+                                :class="{ 'border-purple-600 text-purple-600': activeTab === 'ai', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': activeTab !== 'ai' }"
+                                class="whitespace-nowrap pb-4 px-1 border-b-2 font-medium text-sm transition-colors duration-200">
+                            <i class="fas fa-brain mr-2"></i>AI Insights
+                        </button>
+                    </nav>
+                </div>
+            </div>
+
+            <div>
+                <div x-show="activeTab === 'ringkasan'" x-transition>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                        <div class="bg-blue-600 text-white p-6 rounded-xl shadow-lg flex justify-between items-center">
+                            <div>
+                                <p class="text-sm font-medium opacity-80">Jumlah Kenderaan</p>
+                                <p class="text-4xl font-bold"><?= number_format($total_kenderaan) ?></p>
+                            </div>
+                            <i class="fas fa-car fa-3x opacity-30"></i>
+                        </div>
+                        <div class="bg-green-600 text-white p-6 rounded-xl shadow-lg flex justify-between items-center">
+                            <div>
+                                <p class="text-sm font-medium opacity-80">Jumlah Syarikat GB/PEKEMA</p>
+                                <p class="text-4xl font-bold"><?= number_format($total_gb) ?></p>
+                            </div>
+                            <i class="fas fa-building fa-3x opacity-30"></i>
+                        </div>
+                        <div class="bg-yellow-500 text-white p-6 rounded-xl shadow-lg flex justify-between items-center">
+                            <div>
+                                <p class="text-sm font-medium opacity-80">Jumlah Cukai Terkumpul</p>
+                                <p class="text-3xl font-bold">RM <?= number_format($total_cukai, 2) ?></p>
+                            </div>
+                            <i class="fas fa-coins fa-3x opacity-30"></i>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-md border">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Jumlah Kenderaan Mengikut Syarikat</h3>
+                            <div style="position: relative; height: 400px;">
+                                <canvas id="companyPieChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-md border">
+                             <h3 class="text-lg font-semibold text-gray-800 mb-4">Aktiviti Terkini</h3>
+                             <div class="space-y-4">
+                                <?php if (count($recent_activities) > 0): ?>
+                                    <?php foreach($recent_activities as $activity): ?>
+                                    <div class="flex items-start">
+                                        <div class="bg-blue-100 text-blue-600 rounded-full h-10 w-10 flex-shrink-0 flex items-center justify-center">
+                                            <i class="fas fa-plus"></i>
+                                        </div>
+                                        <div class="ml-4">
+                                            <p class="font-semibold text-sm text-gray-800"><?= htmlspecialchars($activity['vehicle_model']) ?></p>
+                                            <p class="text-xs text-gray-500"><?= htmlspecialchars($activity['gb_nama'] ?? 'N/A') ?></p>
+                                            <p class="text-xs text-gray-400 mt-1"><?= date('d M Y, h:i A', strtotime($activity['created_at'])) ?></p>
+                                        </div>
+                                    </div>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <p class="text-gray-500 text-center py-8">Tiada aktiviti terkini</p>
+                                <?php endif; ?>
+                             </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div x-show="activeTab === 'cukai'" x-transition class="space-y-8">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-blue-600">
+                            <p class="text-sm font-medium text-blue-800">Jumlah Duti Import</p>
+                            <p class="text-2xl font-bold text-blue-900 mt-1">RM <?= number_format($total_import, 2) ?></p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-green-600">
+                            <p class="text-sm font-medium text-green-800">Jumlah Duti Eksais</p>
+                            <p class="text-2xl font-bold text-green-900 mt-1">RM <?= number_format($total_eksais, 2) ?></p>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-lg border-l-4 border-yellow-500">
+                            <p class="text-sm font-medium text-yellow-800">Jumlah Cukai Jualan</p>
+                            <p class="text-2xl font-bold text-yellow-900 mt-1">RM <?= number_format($total_jualan, 2) ?></p>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-6 rounded-xl shadow-lg border">
+                         <div class="flex items-center justify-between mb-4">
+                             <h3 class="text-lg font-semibold text-gray-800">Trend Kutipan Cukai Bulanan (<?= $current_year ?>)</h3>
+                             <span class="text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full">
+                                 <i class="fas fa-chart-line mr-1"></i>AI Prediction Enabled
+                             </span>
+                         </div>
+                         <div class="h-96"><canvas id="monthlyTrendChart"></canvas></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+                        <div class="lg:col-span-3 bg-white p-6 rounded-xl shadow-lg border">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Perbandingan Jumlah Kutipan</h3>
+                            <div class="h-80"><canvas id="taxBarChart"></canvas></div>
+                        </div>
+                        <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg border">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">Pecahan Jenis Cukai</h3>
+                            <div class="h-80"><canvas id="taxPieChart"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div x-show="activeTab === 'ai'" x-transition class="space-y-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="insight-card text-white p-6 rounded-xl shadow-lg">
+                            <div class="flex items-center justify-between mb-2">
+                                <i class="fas fa-chart-line text-3xl opacity-80"></i>
+                                <span class="text-xs bg-white/20 px-2 py-1 rounded">AI</span>
+                            </div>
+                            <p class="text-sm opacity-90">Ramalan Bulan Depan</p>
+                            <p class="text-2xl font-bold mt-1" id="aiPrediction">Mengira...</p>
+                        </div>
+                        <div class="insight-card text-white p-6 rounded-xl shadow-lg">
+                            <div class="flex items-center justify-between mb-2">
+                                <i class="fas fa-trophy text-3xl opacity-80"></i>
+                                <span class="text-xs bg-white/20 px-2 py-1 rounded">TOP</span>
+                            </div>
+                            <p class="text-sm opacity-90">Syarikat Terbaik</p>
+                            <p class="text-lg font-bold mt-1" id="topCompany">...</p>
+                        </div>
+                        <div class="insight-card text-white p-6 rounded-xl shadow-lg">
+                            <div class="flex items-center justify-between mb-2">
+                                <i class="fas fa-percentage text-3xl opacity-80"></i>
+                                <span class="text-xs bg-white/20 px-2 py-1 rounded">TREND</span>
+                            </div>
+                            <p class="text-sm opacity-90">Pertumbuhan Bulanan</p>
+                            <p class="text-2xl font-bold mt-1" id="growthRate">...</p>
+                        </div>
+                        <div class="insight-card text-white p-6 rounded-xl shadow-lg">
+                            <div class="flex items-center justify-between mb-2">
+                                <i class="fas fa-exclamation-triangle text-3xl opacity-80"></i>
+                                <span class="text-xs bg-white/20 px-2 py-1 rounded">ALERT</span>
+                            </div>
+                            <p class="text-sm opacity-90">Anomali Dikesan</p>
+                            <p class="text-2xl font-bold mt-1"><?= count($anomalies) ?></p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="bg-white p-6 rounded-xl shadow-lg border">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                                <i class="fas fa-building text-blue-600 mr-2"></i>Prestasi Syarikat (AI Analysis)
+                            </h3>
+                            <canvas id="companyPerformanceChart" class="h-80"></canvas>
+                        </div>
+                        <div class="bg-white p-6 rounded-xl shadow-lg border">
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                                <i class="fas fa-search-dollar text-purple-600 mr-2"></i>Korelasi Cukai (AI Correlation)
+                            </h3>
+                            <canvas id="correlationChart" class="h-80"></canvas>
+                        </div>
+                    </div>
+
+                    <?php if (count($anomalies) > 0): ?>
+                    <div class="bg-white p-6 rounded-xl shadow-lg border border-l-4 border-l-red-500">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                            <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>Pengesanan Anomali (Nilai Cukai Luar Biasa Tinggi)
+                        </h3>
+                        <div class="space-y-3">
+                            <?php foreach($anomalies as $anomaly): ?>
+                            <div class="flex items-center justify-between p-4 bg-red-50 rounded-lg">
+                                <div class="flex-1">
+                                    <p class="font-semibold text-gray-800"><?= htmlspecialchars($anomaly['vehicle_model']) ?></p>
+                                    <p class="text-sm text-gray-500">Tarikh: <?= date('d M Y', strtotime($anomaly['payment_date'])) ?></p>
+                                </div>
+                                <div class="text-right">
+                                    <p class="text-xl font-bold text-red-600">RM <?= number_format($anomaly['duty_rm'], 2) ?></p>
+                                    <p class="text-xs text-gray-500">
+                                        <?= number_format(($anomaly['duty_rm'] / $anomaly['avg_duty']) * 100, 0) ?>% dari purata
+                                    </p>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                    <?php endif; ?>
+
+                    <div class="bg-white p-6 rounded-xl shadow-lg border">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                            <i class="fas fa-crystal-ball text-purple-600 mr-2"></i>Analisis Ramalan (6 Bulan Akan Datang)
+                        </h3>
+                        <canvas id="predictionChart" class="h-96"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    <script>
+        // Data from PHP
+        const pieChartData = <?= $pie_chart_data ?>;
+        const taxDistributionData = <?= $tax_distribution_data ?>;
+        const taxLineData = <?= $tax_line_chart_data ?>;
+        const historicalData = <?= json_encode($historical_data) ?>;
+        const companyPerformance = <?= json_encode($company_performance) ?>;
+
+        // AI Functions
+        function linearRegression(data) {
+            const n = data.length;
+            if (n < 2) return { slope: 0, intercept: data[0] || 0 };
+            
+            let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0;
+            data.forEach((val, i) => {
+                sumX += i;
+                sumY += val;
+                sumXY += i * val;
+                sumX2 += i * i;
+            });
+            
+            const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+            const intercept = (sumY - slope * sumX) / n;
+            
+            return { slope, intercept };
+        }
+
+        function calculateGrowth(data) {
+            if (data.length < 2) return 0;
+            const recent = data[data.length - 1];
+            const previous = data[data.length - 2];
+            return previous !== 0 ? ((recent - previous) / previous * 100).toFixed(1) : 0;
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            // Company Pie Chart with error handling
+            const pieCanvas = document.getElementById('companyPieChart');
+            
+            if (!pieCanvas) {
+                console.error('Canvas element "companyPieChart" not found!');
+            } else if (!pieChartData.labels || pieChartData.labels.length === 0) {
+                pieCanvas.parentElement.innerHTML = 
+                    '<div class="no-data-message"><i class="fas fa-chart-pie text-6xl text-gray-300"></i><p>Tiada data kenderaan. Sila tambah data kenderaan terlebih dahulu.</p></div>';
+            } else {
+                try {
+                    const pieCtx = pieCanvas.getContext('2d');
+                    
+                    new Chart(pieCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: pieChartData.labels,
+                            datasets: [{
+                                label: 'Jumlah Kenderaan',
+                                data: pieChartData.data,
+                                backgroundColor: [
+                                    '#3B82F6', '#10B981', '#F59E0B', '#EF4444', 
+                                    '#8B5CF6', '#6366F1', '#EC4899', '#6B7280', 
+                                    '#F97316', '#06B6D4', '#14B8A6', '#D946EF'
+                                ],
+                                hoverOffset: 8,
+                                borderWidth: 2,
+                                borderColor: '#fff'
+                            }]
+                        },
+                        options: {
+                            responsive: true, 
+                            maintainAspectRatio: false,
+                            plugins: { 
+                                legend: { 
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 15,
+                                        font: { size: 11 },
+                                        usePointStyle: true
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function(context) {
+                                            const label = context.label || '';
+                                            const value = context.parsed || 0;
+                                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                            const percentage = ((value / total) * 100).toFixed(1);
+                                            return `${label}: ${value} kenderaan (${percentage}%)`;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    
+                } catch (error) {
+                    console.error('Error creating pie chart:', error);
+                    pieCanvas.parentElement.innerHTML = 
+                        '<div class="no-data-message"><i class="fas fa-exclamation-triangle text-6xl text-red-300"></i><p class="text-red-500">Ralat: Gagal memaparkan carta.</p></div>';
+                }
+            }
+
+            // Tax Bar Chart
+            const barCtx = document.getElementById('taxBarChart').getContext('2d');
+            new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: taxDistributionData.labels,
+                    datasets: [{
+                        label: 'Jumlah Kutipan (RM)',
+                        data: taxDistributionData.data,
+                        backgroundColor: ['rgba(59, 130, 246, 0.7)', 'rgba(16, 185, 129, 0.7)', 'rgba(245, 158, 11, 0.7)'],
+                        borderColor: ['#3B82F6', '#10B981', '#F59E0B'],
+                        borderWidth: 2,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    scales:

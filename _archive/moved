@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tambah Kenderaan Baharu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <?php include 'topmenu.php'; ?>
+
+    <main>
+        <?php
+        // --- DATABASE CONNECTION ---
+        $servername = "localhost";
+        $username = "kliacust_iris";
+        $password = "Iris6102009@#";
+        $dbname = "kliacust_gudang";
+        $conn = new mysqli($servername, $username, $password, $dbname);
+
+        if ($conn->connect_error) {
+            die("<div class='bg-red-500 text-white p-4 text-center'>Connection failed: " . $conn->connect_error . "</div>");
+        }
+
+        // --- FETCH GBPEKEMA DATA FOR DROPDOWN ---
+        $gbpekema_list_result = $conn->query("SELECT id, nama FROM gbpekema ORDER BY nama ASC");
+        $gbpekema_options = [];
+        if ($gbpekema_list_result->num_rows > 0) {
+            while($row = $gbpekema_list_result->fetch_assoc()) {
+                $gbpekema_options[] = $row;
+            }
+        }
+        $conn->close();
+        ?>
+
+        <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+            <header class="bg-white shadow-md rounded-lg p-6 mb-8">
+                <h1 class="text-3xl font-bold text-gray-700">Tambah Butiran Kenderaan Baharu</h1>
+                <p class="text-gray-500 mt-1">Sila isi semua maklumat yang diperlukan di bawah.</p>
+            </header>
+
+            <div class="bg-white shadow-md rounded-lg p-8">
+                <form action="add_vehicle.php" method="POST" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="lot_number" class="block text-sm font-medium text-gray-700">Lot Number</label>
+                            <input type="text" name="lot_number" id="lot_number" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        <div>
+                            <label for="gbpekema_id" class="block text-sm font-medium text-gray-700">GB/PEKEMA (Jenis)</label>
+                            <select name="gbpekema_id" id="gbpekema_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                <option value="">Pilih Syarikat</option>
+                                <?php foreach($gbpekema_options as $option): ?>
+                                    <option value="<?= $option['id'] ?>"><?= htmlspecialchars($option['nama']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="chassis_number" class="block text-sm font-medium text-gray-700">Chassis Number</label>
+                            <input type="text" name="chassis_number" id="chassis_number" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        <div>
+                            <label for="engine_number" class="block text-sm font-medium text-gray-700">Engine Number</label>
+                            <input type="text" name="engine_number" id="engine_number" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="vehicle_model" class="block text-sm font-medium text-gray-700">Model Kenderaan</label>
+                            <input type="text" name="vehicle_model" id="vehicle_model" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label for="manufacturing_year" class="block text-sm font-medium text-gray-700">Tahun Dibuat</label>
+                            <input type="number" name="manufacturing_year" id="manufacturing_year" placeholder="YYYY" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label for="color" class="block text-sm font-medium text-gray-700">Warna</label>
+                            <input type="text" name="color" id="color" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                         <div>
+                            <label for="engine_cc" class="block text-sm font-medium text-gray-700">Kapasiti Enjin (CC)</label>
+                            <input type="number" name="engine_cc" id="engine_cc" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label for="tpa_date" class="block text-sm font-medium text-gray-700">Tarikh TPA</label>
+                            <input type="date" name="tpa_date" id="tpa_date" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label for="duty_rm" class="block text-sm font-medium text-gray-700">Duty (RM)</label>
+                            <input type="number" step="0.01" name="duty_rm" id="duty_rm" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                         <div>
+                            <label for="vehicle_condition" class="block text-sm font-medium text-gray-700">Keadaan</label>
+                            <select name="vehicle_condition" id="vehicle_condition" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                                <option value="USED">USED</option>
+                                <option value="NEW">NEW</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="flex justify-end pt-6 border-t border-gray-200">
+                        <a href="index.php" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-6 rounded-lg mr-4">Batal</a>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg">Simpan Kenderaan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>
