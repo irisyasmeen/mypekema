@@ -1,5 +1,5 @@
 <?php
-include 'config.php';
+include '../config.php';
 
 $password_plain = 'Customs123!';
 $password_hashed = password_hash($password_plain, PASSWORD_DEFAULT);

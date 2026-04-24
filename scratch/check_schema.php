@@ -1,5 +1,5 @@
 <?php
-include 'config.php';
+include '../config.php';
 
 $tables = ['allowed_list', 'users'];
 foreach ($tables as $t) {
