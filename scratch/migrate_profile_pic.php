@@ -1,5 +1,5 @@
 <?php
-include 'config.php';
+include '../config.php';
 
 $sql1 = "ALTER TABLE users ADD COLUMN IF NOT EXISTS profile_pic VARCHAR(255) DEFAULT NULL";
 $sql2 = "ALTER TABLE " . TABLE_WHITELIST . " ADD COLUMN IF NOT EXISTS profile_pic VARCHAR(255) DEFAULT NULL";
