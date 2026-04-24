@@ -103,7 +103,7 @@ $recent_activities = ($result_activity) ? $result_activity->fetch_all(MYSQLI_ASS
 // 3.5. Pending Applications (For Admin Dashboard)
 $pending_applications = [];
 $total_pending = 0;
-if (!$is_licensee) {
+if (in_array($user_role, ['admin', 'supervisor'])) {
     $sql_count_pending = "SELECT COUNT(id) as total FROM vehicle_inventory WHERE status_pergerakan = 'Pending'";
     $res_count_pending = $conn->query($sql_count_pending);
     if ($res_count_pending) {
@@ -984,7 +984,7 @@ $top_vehicle_chart_data = json_encode($top_vehicle_data);
                     </div>
                 </div>
 
-                <?php if (!$is_licensee): ?>
+                <?php if (in_array($user_role, ['admin', 'supervisor'])): ?>
                 <!-- Pending Applications Section -->
                 <div class="mt-8 glass-panel p-8 rounded-3xl shadow-sm border-t-4 border-amber-500">
                     <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
