@@ -50,6 +50,34 @@ $user_email = $_SESSION['user_email'] ?? 'Tiada E-mel';
                         <i class="fas fa-user-circle text-blue-500 mr-3"></i>
                         Maklumat Akaun
                     </h2>
+                    <div class="flex flex-col md:flex-row items-center gap-8 mb-8 pb-8 border-b border-gray-100">
+                        <div class="relative group">
+                            <div class="w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-xl group-hover:opacity-75 transition-all">
+                                <?php 
+                                $profile_pic = $_SESSION['profile_pic'] ?? null;
+                                if ($profile_pic && file_exists($profile_pic)): ?>
+                                    <img src="<?= htmlspecialchars($profile_pic) ?>" class="w-full h-full object-cover">
+                                <?php else: ?>
+                                    <div class="w-full h-full bg-indigo-600 flex items-center justify-center text-white text-4xl font-bold">
+                                        <?= strtoupper(substr($user_name, 0, 1)) ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                            <form id="profilePicForm" action="upload_profile_pic.php" method="POST" enctype="multipart/form-data" class="hidden">
+                                <input type="file" name="profile_pic" id="profile_pic_input" accept="image/*" onchange="document.getElementById('profilePicForm').submit()">
+                            </form>
+                            <button onclick="document.getElementById('profile_pic_input').click()" 
+                                    class="absolute bottom-0 right-0 w-10 h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-indigo-700 transition-all">
+                                <i class="fas fa-camera"></i>
+                            </button>
+                        </div>
+                        <div class="text-center md:text-left">
+                            <h2 class="text-2xl font-bold text-slate-800"><?= htmlspecialchars($user_name) ?></h2>
+                            <p class="text-slate-500 font-medium"><?= htmlspecialchars($user_role) ?></p>
+                            <p class="text-xs text-indigo-600 font-bold mt-2 uppercase tracking-widest">Kastam MyPEKEMA User</p>
+                        </div>
+                    </div>
+
                     <div class="space-y-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-600">Nama Penuh</label>

@@ -392,8 +392,14 @@ function isParentActive($pages, $current_page)
                                     class="absolute inset-0 bg-blue-600 blur-md opacity-0 group-hover:opacity-40 transition-opacity">
                                 </div>
                                 <div
-                                    class="relative w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-900 flex items-center justify-center text-white font-black shadow-lg border border-white/10">
-                                    <?= strtoupper(substr($nama_pegawai, 0, 1)) ?>
+                                    class="relative w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-900 flex items-center justify-center text-white font-black shadow-lg border border-white/10 overflow-hidden">
+                                    <?php 
+                                    $profile_pic = $_SESSION['profile_pic'] ?? null;
+                                    if ($profile_pic && file_exists($profile_pic)): ?>
+                                        <img src="<?= htmlspecialchars($profile_pic) ?>" class="w-full h-full object-cover">
+                                    <?php else: ?>
+                                        <?= strtoupper(substr($nama_pegawai, 0, 1)) ?>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </button>
@@ -545,7 +551,14 @@ function isParentActive($pages, $current_page)
                 <?php endif; ?>
             </div>
 
-            <div class="flex items-center gap-5 p-5 mt-6 border-t border-white/10">
+            <div class="flex items-center gap-4 p-5 mt-6 border-t border-white/10">
+                <div class="w-12 h-12 rounded-xl bg-blue-600/20 flex items-center justify-center text-blue-400 overflow-hidden">
+                    <?php if ($profile_pic && file_exists($profile_pic)): ?>
+                        <img src="<?= htmlspecialchars($profile_pic) ?>" class="w-full h-full object-cover">
+                    <?php else: ?>
+                        <span class="font-black"><?= strtoupper(substr($nama_pegawai, 0, 1)) ?></span>
+                    <?php endif; ?>
+                </div>
                 <div class="flex-1">
                     <p class="text-sm font-bold text-white"><?= htmlspecialchars($nama_pegawai) ?></p>
                     <p class="text-xs text-slate-500 font-mono"><?= htmlspecialchars($user_email) ?></p>
