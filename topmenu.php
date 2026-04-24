@@ -155,7 +155,7 @@ function isParentActive($pages, $current_page)
                         </div>
 
                         <!-- Permohonan Dropdown (New structure) -->
-                        <?php if (!in_array($user_role, ['admin', 'supervisor'])): ?>
+                        <?php if (!in_array($user_role, ['admin', 'supervisor', 'user'])): ?>
                         <div class="relative group h-20 flex items-center">
                             <?php $permohonan_pages = ['permohonan.php', 'borang_pergerakan.php', 'borang_lampiran_f.php', 'borang_lampiran_g.php', 'borang_lampiran_k.php', 'borang_lampiran_l.php']; ?>
                             <button
@@ -471,7 +471,7 @@ function isParentActive($pages, $current_page)
                 <?php endif; ?>
             </div>
 
-            <?php if (!in_array($user_role, ['admin', 'supervisor'])): ?>
+            <?php if (!in_array($user_role, ['admin', 'supervisor', 'user'])): ?>
             <div class="space-y-1">
                 <p class="px-4 text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 mt-4">JENIS PERMOHONAN</p>
                 <a href="borang_pergerakan.php"
