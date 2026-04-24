@@ -5,9 +5,11 @@ $user_role = $_SESSION['user_role'] ?? 'user';
 $nama_pegawai = $_SESSION['nama_pegawai'] ?? 'Pengguna';
 $user_email = $_SESSION['user_email'] ?? '';
 
-// Ensure we always have the freshest role from the database
+// Ensure we always have the freshest role and profile pic from the database
 if (!empty($user_email) && isset($conn)) {
-    $role_check = $conn->prepare("SELECT role FROM " . TABLE_WHITELIST . " WHERE email = ?");
+    // We use a safe query that doesn't fail if profile_pic column is missing
+    $sql_u = "SELECT role, (SELECT profile_pic FROM " . TABLE_WHITELIST . " WHERE email = ?) as pic FROM " . TABLE_WHITELIST . " WHERE email = ?";
+    $role_check = $conn->prepare("SELECT * FROM " . TABLE_WHITELIST . " WHERE email = ?");
     if ($role_check) {
         $role_check->bind_param("s", $user_email);
         $role_check->execute();
@@ -15,10 +17,14 @@ if (!empty($user_email) && isset($conn)) {
         if ($role_row = $role_res->fetch_assoc()) {
             $user_role = $role_row['role'];
             $_SESSION['user_role'] = $user_role;
+            if (isset($role_row['profile_pic'])) {
+                $_SESSION['profile_pic'] = $role_row['profile_pic'];
+            }
         }
         $role_check->close();
     }
 }
+$profile_pic = $_SESSION['profile_pic'] ?? null;
 
 // Pending applications count for admin/supervisor/customs
 $total_pending = 0;
@@ -393,9 +399,7 @@ function isParentActive($pages, $current_page)
                                 </div>
                                 <div
                                     class="relative w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-900 flex items-center justify-center text-white font-black shadow-lg border border-white/10 overflow-hidden">
-                                    <?php 
-                                    $profile_pic = $_SESSION['profile_pic'] ?? null;
-                                    if ($profile_pic && file_exists($profile_pic)): ?>
+                                    <?php if ($profile_pic && file_exists($profile_pic)): ?>
                                         <img src="<?= htmlspecialchars($profile_pic) ?>" class="w-full h-full object-cover">
                                     <?php else: ?>
                                         <?= strtoupper(substr($nama_pegawai, 0, 1)) ?>

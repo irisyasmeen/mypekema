@@ -59,6 +59,7 @@ try {
         $_SESSION['nama_pegawai'] = $final_nama;
         $_SESSION['user_role'] = $final_role;
         $_SESSION['gbpekema_id'] = $final_gb_id;
+        $_SESSION['profile_pic'] = $user['profile_pic'] ?? null;
 
         // Kemas kini tarikh log masuk terakhir
         $conn->query("UPDATE " . TABLE_WHITELIST . " SET last_login = NOW() WHERE email = '$verified_email'");

@@ -44,6 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['login'])) {
                     $_SESSION['user_role'] = $user['role'];
                     $_SESSION['nama_pegawai'] = $user['nama_pegawai'];
                     $_SESSION['gbpekema_id'] = $whitelist_user['gbpekema_id'];
+                    $_SESSION['profile_pic'] = $user['profile_pic'] ?? null;
 
                     // Kemas kini tarikh log masuk terakhir
                     $conn->query("UPDATE " . TABLE_WHITELIST . " SET last_login = NOW() WHERE email = '$email'");
