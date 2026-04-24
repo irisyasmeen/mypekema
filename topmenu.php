@@ -20,6 +20,16 @@ if (!empty($user_email) && isset($conn)) {
     }
 }
 
+// Pending applications count for admin/supervisor/customs
+$total_pending = 0;
+if (in_array($user_role, ['admin', 'supervisor', 'customs']) && isset($conn)) {
+    $sql_count_pending = "SELECT COUNT(id) as total FROM vehicle_inventory WHERE status_pergerakan = 'Pending'";
+    $res_count_pending = $conn->query($sql_count_pending);
+    if ($res_count_pending) {
+        $total_pending = (int) $res_count_pending->fetch_assoc()['total'];
+    }
+}
+
 // Active page helper
 function getActiveClasses($page_name, $current_page)
 {
@@ -353,6 +363,17 @@ function isParentActive($pages, $current_page)
                         class="hidden sm:flex w-11 h-11 items-center justify-center rounded-2xl bg-white/5 border border-white/10 text-slate-400 hover:bg-blue-600 hover:text-white hover:border-blue-500 transition-all duration-300 group">
                         <i class="fas fa-book-open text-sm group-hover:scale-110"></i>
                     </a>
+
+                    <!-- Notification Bell (For Admin/Supervisor/Customs) -->
+                    <?php if ($total_pending > 0): ?>
+                    <a href="permohonan.php?status=Pending" title="<?= $total_pending ?> Permohonan Menunggu Kelulusan"
+                        class="relative flex w-11 h-11 items-center justify-center rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-500 hover:bg-amber-500 hover:text-white transition-all duration-300 group">
+                        <i class="fas fa-bell text-sm group-hover:scale-110 <?= $total_pending > 0 ? 'animate-bounce' : '' ?>"></i>
+                        <span class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-rose-600 text-[10px] font-bold text-white shadow-lg ring-2 ring-[#001f3f]">
+                            <?= $total_pending ?>
+                        </span>
+                    </a>
+                    <?php endif; ?>
 
                     <!-- User Profile Dropdown -->
                     <div class="relative group flex items-center">
