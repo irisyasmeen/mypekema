@@ -143,7 +143,7 @@ function isParentActive($pages, $current_page)
                                         </a>
                                     <?php endif; ?>
 
-                                    <?php if ($user_role !== 'licensee'): ?>
+                                    <?php if (!in_array($user_role, ['licensee', 'user'])): ?>
                                     <a href="arkib.php"
                                         class="flex items-center gap-4 px-4 py-3 rounded-2xl hover:bg-white/5 text-sm text-slate-300 hover:text-white transition-all">
                                         <i class="fas fa-archive text-slate-400 w-5"></i>
@@ -270,7 +270,7 @@ function isParentActive($pages, $current_page)
 
 
                         <!-- Syarikat -->
-                        <?php if ($user_role !== 'licensee'): ?>
+                        <?php if (!in_array($user_role, ['licensee', 'user'])): ?>
                         <a href="gbpekema.php"
                             class="px-4 py-2 text-sm font-semibold h-20 flex items-center <?= getActiveClasses('gbpekema.php', $current_page) ?>">
                             <i class="fas fa-building mr-2 opacity-70"></i>Syarikat
@@ -278,7 +278,7 @@ function isParentActive($pages, $current_page)
                         <?php endif; ?>
 
                         <!-- Analisa AI Dropdown -->
-                        <?php if ($user_role !== 'licensee'): ?>
+                        <?php if (!in_array($user_role, ['licensee', 'user'])): ?>
                         <div class="relative group h-20 flex items-center">
                             <button
                                 class="px-5 py-2 text-sm font-semibold flex items-center gap-2 <?= isParentActive($analisa_pages, $current_page) ?> transition-colors duration-300">
@@ -347,7 +347,7 @@ function isParentActive($pages, $current_page)
                         <?php endif; ?>
 
                         <!-- Laporan -->
-                        <?php if ($user_role !== 'licensee'): ?>
+                        <?php if (!in_array($user_role, ['licensee', 'user'])): ?>
                         <a href="report.php"
                             class="px-4 py-2 text-sm font-semibold h-20 flex items-center <?= getActiveClasses('report.php', $current_page) ?>">
                             <i class="fas fa-file-pdf mr-2 opacity-70"></i>Laporan
@@ -464,7 +464,7 @@ function isParentActive($pages, $current_page)
                         class="flex items-center gap-4 px-5 py-5 rounded-[1.5rem] bg-blue-600/10 text-blue-300 border border-blue-500/10"><i
                             class="fas fa-robot w-6"></i> AI Vision Scan</a>
                 <?php endif; ?>
-                <?php if ($user_role !== 'licensee'): ?>
+                <?php if (!in_array($user_role, ['licensee', 'user'])): ?>
                 <a href="arkib.php"
                     class="flex items-center gap-4 px-4 py-4 rounded-2xl text-slate-300 hover:bg-white/5 transition-all"><i
                         class="fas fa-archive w-6 text-slate-400"></i> Arkib Selesai</a>
@@ -507,7 +507,7 @@ function isParentActive($pages, $current_page)
             <div class="space-y-1">
                 <p class="px-4 text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3 mt-4">ANALISA &
                     LAPORAN</p>
-                <?php if ($user_role !== 'licensee'): ?>
+                <?php if (!in_array($user_role, ['licensee', 'user'])): ?>
                 <a href="analisis_cukai.php"
                     class="flex items-center gap-4 px-4 py-4 rounded-2xl text-slate-300 hover:bg-white/5 transition-all"><i
                         class="fas fa-chart-line w-6 text-blue-400"></i> Analisa Pintar</a>
@@ -515,12 +515,12 @@ function isParentActive($pages, $current_page)
                     class="flex items-center gap-4 px-4 py-4 rounded-2xl text-slate-300 hover:bg-white/5 transition-all"><i
                         class="fas fa-hourglass-half w-6 text-indigo-400"></i> Analisa Tempoh Gudang</a>
                 <?php endif; ?>
-                <?php if ($user_role !== 'licensee'): ?>
+                <?php if (!in_array($user_role, ['licensee', 'user'])): ?>
                 <a href="gbpekema.php"
                     class="flex items-center gap-4 px-4 py-4 rounded-2xl text-slate-300 hover:bg-white/5 transition-all"><i
                         class="fas fa-building w-6 text-blue-400"></i> Senarai Syarikat</a>
                 <?php endif; ?>
-                <?php if ($user_role !== 'licensee'): ?>
+                <?php if (!in_array($user_role, ['licensee', 'user'])): ?>
                 <a href="report.php"
                     class="flex items-center gap-4 px-4 py-4 rounded-2xl text-slate-300 hover:bg-white/5 transition-all"><i
                         class="fas fa-file-invoice w-6 text-blue-400"></i> Jana Laporan</a>
